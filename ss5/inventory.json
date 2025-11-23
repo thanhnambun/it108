@@ -1,0 +1,16 @@
+{
+    "products": [
+        {
+            "product_id": "0378c247-975a-43e5-9f43-22dca0ceb05f",
+            "name": "hello",
+            "quantity": 10,
+            "price": 1213.0
+        },
+        {
+            "product_id": "f8bf5ceb-8a77-42a6-8064-c495a07085d1",
+            "name": "ip",
+            "quantity": 12,
+            "price": 10.0
+        }
+    ]
+}
