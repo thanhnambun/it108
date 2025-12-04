@@ -1,279 +1,258 @@
 import json
-import matplotlib.pyplot as plt
-import sys
+import csv
 import os
+from tabulate import tabulate
+import matplotlib.pyplot as plt
 
-students = []
 DATA_FILE = "data.json"
 
-def score_validation(score, name):
-    """_score_validation_
 
-    Args:
-        score (_float_): _score_to_validate_
-        name (_str_): _name_the_subject_
+def load_data():
+    """Tải dữ liệu từ file JSON"""
+    if os.path.exists(DATA_FILE):
+        with open(DATA_FILE, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    return []
 
-    Raises:
-        ValueError: _print_the_error_
-    """
-    if score < 0 or score > 10:
-        raise ValueError(f"{name} score must be between 0 and 10")
 
-def classify(avg):
-    """_classify_
-
-    Args:
-        avg (_float_): _the_avg_score_
-
-    Returns:
-        _str_: _classification based on avg score_
-    """
-    if avg >= 8:
-        return 'Excellent'
-    elif avg >= 6.5:
-        return 'Good'
-    elif avg >= 5:
-        return 'Average'
-    else:
-        return 'Poor'
-
-def load_from_file():
-    """_load_from_file_
-    """
-    global students
-    if not os.path.exists(DATA_FILE):
-        students = []
-        return
-    with open(DATA_FILE, 'r', encoding='utf-8') as f:
-        try:
-            data = json.load(f)
-            students = data.get('students', [])
-        except json.JSONDecodeError:
-            students = []
-
-def display_students():
-    """_display_students_
-    """
-    load_from_file()
-    if not students:
-        print("Empty list.")
-        return
-    headers = ["ID", "Name", "Math", "Physics", "Chemistry", "Average", "Rank"]
-    col_widths = [10, 25, 8, 8, 10, 10, 10]
-    line = " | ".join(h.ljust(w) for h, w in zip(headers, col_widths))
-    sep = "-" * len(line)
-    print(sep)
-    print(line)
-    print(sep)
-    for s in students:
-        row = [
-            str(s.get('id', '')).ljust(col_widths[0]),
-            str(s.get('name', '')).ljust(col_widths[1]),
-            f"{s.get('math', 0):.2f}".ljust(col_widths[2]),
-            f"{s.get('physics', 0):.2f}".ljust(col_widths[3]),
-            f"{s.get('chemistry', 0):.2f}".ljust(col_widths[4]),
-            f"{s.get('average', 0):.2f}".ljust(col_widths[5]),
-            str(s.get('rank', '')).ljust(col_widths[6])
-        ]
-        print(" | ".join(row))
-    print(sep)
-
-def find_student_index_by_id(sid):
-    """_find_student_index_by_id_
-
-    Args:
-        sid (_str_): _just_string_id_
-
-    Returns:
-        _i/None_: _return_the_element_of_list_or_none_
-    """
-    for i, s in enumerate(students):
-        if s.get('id') == sid:
-            return i
-    return None
-
-def add_student():
-    """_add_student_
-    """
-    sid = input("Enter Student ID: ").strip()
-    if any(s.get('id') == sid for s in students):
-        print("ID already exists.")
-        return
-    name = input("Enter Name: ").strip()
-    try:
-        math = float(input("Math Score: ").strip())
-        physics = float(input("Physics Score: ").strip())
-        chemistry = float(input("Chemistry Score: ").strip())
-        score_validation(math, 'Math')
-        score_validation(physics, 'Physics')
-        score_validation(chemistry, 'Chemistry')
-    except ValueError as e:
-        print(f"Error: {e}")
-        return
-    average = (math + physics + chemistry) / 3
-    rank = classify(average)
-    student = {
-        'id': sid,
-        'name': name,
-        'math': math,
-        'physics': physics,
-        'chemistry': chemistry,
-        'average': round(average, 2),
-        'rank': rank
-    }
-    students.append(student)
-    print("Student added. (Not saved yet)")
-
-def update_student():
-    """_update_student_
-    """
-    sid = input("Enter Student ID to update: ").strip()
-    idx = find_student_index_by_id(sid)
-    if idx is None:
-        print("Student ID not found.")
-        return
-    try:
-        math = float(input("New Math Score: ").strip())
-        physics = float(input("New Physics Score: ").strip())
-        chemistry = float(input("New Chemistry Score: ").strip())
-        score_validation(math, 'Math')
-        score_validation(physics, 'Physics')
-        score_validation(chemistry, 'Chemistry')
-    except ValueError as e:
-        print(f"Error: {e}")
-        return
-    average = (math + physics + chemistry) / 3
-    students[idx]['math'] = math
-    students[idx]['physics'] = physics
-    students[idx]['chemistry'] = chemistry
-    students[idx]['average'] = round(average, 2)
-    students[idx]['rank'] = classify(average)
-    print("Update successful. (Not saved yet)")
-
-def delete_student():
-    """_delete_student_
-    """
-    sid = input("Enter Student ID to delete: ").strip()
-    idx = find_student_index_by_id(sid)
-    if idx is None:
-        print("Student ID not found.")
-        return
-    confirm = input(f"Are you sure to delete {sid}? (y/n): ").strip().lower()
-    if confirm == 'y':
-        del students[idx]
-        print("Deleted. (Not saved yet)")
-    else:
-        print("Cancelled.")
-
-def search_student():
-    """_search_student_
-    """
-    key = input("Enter name (partial) or Student ID: ").strip().lower()
-    results = []
-    for s in students:
-        if key == s.get('id', '').lower() or key in s.get('name', '').lower():
-            results.append(s)
-    if not results:
-        print("Not found.")
-        return
-    print("Results:")
-    for r in results:
-        print(f"{r.get('id')} | {r.get('name')} | {r.get('average'):.2f} | {r.get('rank')}")
-
-def sort_students():
-    """_sort_students_
-    """
-    print("1. Sort by average score - descending")
-    print("2. Sort by name A-Z")
-    c = input("Choose: ").strip()
-    if c == '1':
-        students.sort(key=lambda x: x.get('average', 0), reverse=True)
-    elif c == '2':
-        students.sort(key=lambda x: x.get('name', '').lower())
-    else:
-        print("Invalid choice.")
-        return
-    print("Sorted. (Not saved yet)")
-
-def statistics():
-    """_statistics_
-
-    Returns:
-        _dict_: _return_the_statistic_of_rank_
-    """
-    if not students:
-        print("Empty list.")
-        return
-    excellent = sum(1 for s in students if s.get('rank') == 'Excellent')
-    good = sum(1 for s in students if s.get('rank') == 'Good')
-    average = sum(1 for s in students if s.get('rank') == 'Average')
-    poor = sum(1 for s in students if s.get('rank') == 'Poor')
-    total = len(students)
-    print(f"Total: {total}")
-    print(f"Excellent: {excellent}")
-    print(f"Good: {good}")
-    print(f"Average: {average}")
-    print(f"Poor: {poor}")
-    return {'Excellent': excellent, 'Good': good, 'Average': average, 'Poor': poor}
-
-def draw_chart():
-    """_draw_chart_
-    """
-    stats = statistics()
-    if not stats:
-        return
-    labels = list(stats.keys())
-    sizes = list(stats.values())
-    print("1. Pie chart")
-    print("2. Bar chart")
-    c = input("Choose chart type: ").strip()
-    if c == '1':
-        plt.figure()
-        plt.pie(sizes, labels=labels, autopct='%1.1f%%')
-        plt.title('Rank Distribution')
-        plt.show()
-    elif c == '2':
-        plt.figure()
-        plt.bar(labels, sizes)
-        plt.title('Rank Count')
-        plt.ylabel('Number of Students')
-        plt.show()
-    else:
-        print("Invalid choice.")
-
-def save_to_file():
-    """_save_to_file_
-    """
+def save_data(students):
+    """Lưu dữ liệu vào file JSON"""
     with open(DATA_FILE, 'w', encoding='utf-8') as f:
-        json.dump({'students': students}, f, indent=4, ensure_ascii=False)
-    print("Data saved successfully.")
+        json.dump(students, f, ensure_ascii=False, indent=2)
+    print("✓ Dữ liệu đã được lưu.")
 
-while True:
-    print("\n----------- MENU -----------")
-    print("1. Display students")
-    print("2. Add student")
-    print("3. Update student")
-    print("4. Delete student")
-    print("5. Search student")
-    print("6. Sort students")
-    print("7. Statistics")
-    print("8. Draw chart")
-    print("9. Save to file")
-    print("10. Exit")
-    choice = input("Enter choice (1-10): ").strip()
 
-    if choice == '1': display_students()
-    elif choice == '2': add_student()
-    elif choice == '3': update_student()
-    elif choice == '4': delete_student()
-    elif choice == '5': search_student()
-    elif choice == '6': sort_students()
-    elif choice == '7': statistics()
-    elif choice == '8': draw_chart()
-    elif choice == '9': save_to_file()
-    elif choice == '10':
-        save_to_file()
-        print("Goodbye!")
-        sys.exit()
+def save_csv(students):
+    """Lưu dữ liệu vào file CSV"""
+    if not students:
+        print("Danh sách trống!")
+        return
+    with open("data.csv", 'w', newline='', encoding='utf-8') as f:
+        writer = csv.DictWriter(
+            f, fieldnames=['ma_sv', 'ten', 'toan', 'ly', 'hoa', 'diem_tb', 'xep_loai'])
+        writer.writeheader()
+        writer.writerows(students)
+    print("✓ Dữ liệu đã được lưu vào data.csv")
+
+
+def calculate_avg(toan, ly, hoa):
+    """Tính điểm trung bình"""
+    return round((toan + ly + hoa) / 3, 2)
+
+
+def classify(diem_tb):
+    """Xếp loại học lực"""
+    if diem_tb >= 8.0:
+        return "Giỏi"
+    elif diem_tb >= 6.5:
+        return "Khá"
+    elif diem_tb >= 5.0:
+        return "Trung Bình"
     else:
-        print("Invalid choice.")
+        return "Yếu"
+
+
+def display_students(students):
+    """Hiển thị danh sách sinh viên dưới dạng bảng"""
+    if not students:
+        print("Danh sách trống!")
+        return
+    headers = ["Mã SV", "Tên", "Toán", "Lý", "Hóa", "Điểm TB", "Xếp loại"]
+    data = [[s['ma_sv'], s['ten'], s['toan'], s['ly'], s['hoa'], s['diem_tb'], s['xep_loai']]
+            for s in students]
+    print("\n" + tabulate(data, headers=headers, tablefmt="grid"))
+
+
+def add_student(students):
+    """Thêm sinh viên mới"""
+    ma_sv = input("Nhập mã SV: ").strip()
+    if any(s['ma_sv'] == ma_sv for s in students):
+        print("⚠ Mã SV đã tồn tại!")
+        return
+
+    ten = input("Nhập tên: ").strip()
+    try:
+        toan = float(input("Điểm Toán (0-10): "))
+        ly = float(input("Điểm Lý (0-10): "))
+        hoa = float(input("Điểm Hóa (0-10): "))
+        if not (0 <= toan <= 10 and 0 <= ly <= 10 and 0 <= hoa <= 10):
+            print("⚠ Điểm phải trong khoảng 0-10!")
+            return
+    except ValueError:
+        print("⚠ Vui lòng nhập số!")
+        return
+
+    diem_tb = calculate_avg(toan, ly, hoa)
+    xep_loai = classify(diem_tb)
+    students.append({
+        'ma_sv': ma_sv, 'ten': ten, 'toan': toan, 'ly': ly, 'hoa': hoa,
+        'diem_tb': diem_tb, 'xep_loai': xep_loai
+    })
+    print(f"✓ Thêm {ten} thành công!")
+
+
+def update_student(students):
+    """Cập nhật sinh viên"""
+    ma_sv = input("Nhập mã SV cần cập nhật: ").strip()
+    for s in students:
+        if s['ma_sv'] == ma_sv:
+            try:
+                toan = float(
+                    input(f"Điểm Toán mới ({s['toan']}): ") or s['toan'])
+                ly = float(input(f"Điểm Lý mới ({s['ly']}): ") or s['ly'])
+                hoa = float(input(f"Điểm Hóa mới ({s['hoa']}): ") or s['hoa'])
+                if not (0 <= toan <= 10 and 0 <= ly <= 10 and 0 <= hoa <= 10):
+                    print("⚠ Điểm phải trong khoảng 0-10!")
+                    return
+                s['toan'], s['ly'], s['hoa'] = toan, ly, hoa
+                s['diem_tb'] = calculate_avg(toan, ly, hoa)
+                s['xep_loai'] = classify(s['diem_tb'])
+                print(f"✓ Cập nhật {s['ten']} thành công!")
+                return
+            except ValueError:
+                print("⚠ Vui lòng nhập số!")
+                return
+    print("⚠ Không tìm thấy sinh viên!")
+
+
+def delete_student(students):
+    """Xoá sinh viên"""
+    ma_sv = input("Nhập mã SV cần xoá: ").strip()
+    for i, s in enumerate(students):
+        if s['ma_sv'] == ma_sv:
+            confirm = input(
+                f"Bạn có chắc muốn xóa {s['ten']}? (y/n): ").lower()
+            if confirm == 'y':
+                del students[i]
+                print("✓ Xoá thành công!")
+            return
+    print("⚠ Không tìm thấy sinh viên!")
+
+
+def search_student(students):
+    """Tìm kiếm sinh viên"""
+    print("Tìm theo: 1. Mã SV  2. Tên")
+    choice = input("Chọn (1/2): ").strip()
+    results = []
+
+    if choice == '1':
+        ma_sv = input("Nhập mã SV: ").strip()
+        results = [s for s in students if s['ma_sv'] == ma_sv]
+    elif choice == '2':
+        ten = input("Nhập tên: ").strip().lower()
+        results = [s for s in students if ten in s['ten'].lower()]
+
+    if results:
+        display_students(results)
+    else:
+        print("⚠ Không tìm thấy!")
+
+
+def sort_students(students):
+    """Sắp xếp danh sách"""
+    if not students:
+        print("Danh sách trống!")
+        return
+    print("Sắp xếp theo: 1. Điểm TB (↓)  2. Tên (A-Z)")
+    choice = input("Chọn (1/2): ").strip()
+
+    if choice == '1':
+        students.sort(key=lambda x: x['diem_tb'], reverse=True)
+    elif choice == '2':
+        students.sort(key=lambda x: x['ten'])
+
+    print("✓ Đã sắp xếp!")
+    display_students(students)
+
+
+def stats(students):
+    """Thống kê điểm"""
+    if not students:
+        print("Danh sách trống!")
+        return
+
+    counts = {'Giỏi': 0, 'Khá': 0, 'Trung Bình': 0, 'Yếu': 0}
+    for s in students:
+        counts[s['xep_loai']] += 1
+
+    print("\n--- Thống kê xếp loại ---")
+    for k, v in counts.items():
+        print(f"{k}: {v} sinh viên")
+    return counts
+
+
+def plot_chart(counts):
+    """Vẽ biểu đồ"""
+    if not counts or sum(counts.values()) == 0:
+        print("Không có dữ liệu để vẽ!")
+        return
+
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))
+    labels = list(counts.keys())
+    values = list(counts.values())
+    colors = ['#ff9999', '#66b3ff', '#99ff99', '#ffcc99']
+
+    # Pie chart
+    ax1.pie(values, labels=labels, autopct='%1.1f%%',
+            colors=colors, startangle=90)
+    ax1.set_title("Pie Chart - Xếp loại học lực")
+
+    # Bar chart
+    ax2.bar(labels, values, color=colors)
+    ax2.set_title("Bar Chart - Xếp loại học lực")
+    ax2.set_ylabel("Số lượng")
+
+    plt.tight_layout()
+    plt.show()
+
+
+def menu():
+    """Menu chính"""
+    students = load_data()
+
+    while True:
+        print("\n" + "="*40)
+        print("QUẢN LÝ SINH VIÊN")
+        print("="*40)
+        print("1. Hiển thị danh sách")
+        print("2. Thêm sinh viên")
+        print("3. Cập nhật sinh viên")
+        print("4. Xoá sinh viên")
+        print("5. Tìm kiếm sinh viên")
+        print("6. Sắp xếp danh sách")
+        print("7. Thống kê điểm")
+        print("8. Vẽ biểu đồ")
+        print("9. Lưu CSV")
+        print("10. Thoát")
+        print("="*40)
+
+        choice = input("Chọn chức năng (1-10): ").strip()
+
+        if choice == '1':
+            display_students(students)
+        elif choice == '2':
+            add_student(students)
+        elif choice == '3':
+            update_student(students)
+        elif choice == '4':
+            delete_student(students)
+        elif choice == '5':
+            search_student(students)
+        elif choice == '6':
+            sort_students(students)
+        elif choice == '7':
+            counts = stats(students)
+        elif choice == '8':
+            counts = stats(students)
+            plot_chart(counts)
+        elif choice == '9':
+            save_csv(students)
+        elif choice == '10':
+            save_data(students)
+            print("✓ Thoát chương trình. Tạm biệt!")
+            break
+        else:
+            print("⚠ Lựa chọn không hợp lệ!")
+
+
+menu()
