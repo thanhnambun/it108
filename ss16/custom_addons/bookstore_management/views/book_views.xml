@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Tree View cho Book -->
+    <record id="view_bookstore_book_tree" model="ir.ui.view">
+        <field name="name">bookstore.book.tree</field>
+        <field name="model">bookstore.book</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="title"/>
+                <field name="author"/>
+                <field name="price" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                <field name="publish_date"/>
+                <field name="stock_quantity"/>
+                <field name="active" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Form View cho Book -->
+    <record id="view_bookstore_book_form" model="ir.ui.view">
+        <field name="name">bookstore.book.form</field>
+        <field name="model">bookstore.book</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive">
+                            <field name="active" widget="boolean_button" options="{'terminology': 'archive'}"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="title" placeholder="Tên sách..."/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="Thông tin cơ bản">
+                            <field name="author"/>
+                            <field name="isbn"/>
+                            <field name="publish_date"/>
+                        </group>
+                        <group string="Thông tin kinh doanh">
+                            <field name="price"/>
+                            <field name="stock_quantity"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Mô tả">
+                            <field name="description" placeholder="Nhập mô tả về nội dung sách..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_bookstore_book_search" model="ir.ui.view">
+        <field name="name">bookstore.book.search</field>
+        <field name="model">bookstore.book</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="title"/>
+                <field name="author"/>
+                <field name="isbn"/>
+                <filter string="Đang kinh doanh" name="active" domain="[('active', '=', True)]"/>
+                <filter string="Ngừng kinh doanh" name="inactive" domain="[('active', '=', False)]"/>
+                <separator/>
+                <filter string="Còn hàng" name="in_stock" domain="[('stock_quantity', '>', 0)]"/>
+                <filter string="Hết hàng" name="out_of_stock" domain="[('stock_quantity', '=', 0)]"/>
+                <group expand="0" string="Nhóm theo">
+                    <filter string="Tác giả" name="group_author" context="{'group_by': 'author'}"/>
+                    <filter string="Ngày xuất bản" name="group_publish_date" context="{'group_by': 'publish_date'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action cho Book -->
+    <record id="action_bookstore_book" model="ir.actions.act_window">
+        <field name="name">Quản lý sách</field>
+        <field name="res_model">bookstore.book</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{'search_default_active': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Tạo sách đầu tiên trong cửa hàng!
+            </p>
+            <p>
+                Quản lý thông tin sách, tác giả, giá cả và tồn kho.<br/>
+                Dữ liệu sẽ được lưu trữ trong PostgreSQL thông qua Odoo ORM.
+            </p>
+        </field>
+    </record>
+
+    <!-- Menu -->
+    <menuitem id="menu_bookstore_root"
+              name="Cửa hàng sách"
+              sequence="30"/>
+
+    <menuitem id="menu_bookstore_book"
+              name="Sách"
+              parent="menu_bookstore_root"
+              action="action_bookstore_book"
+              sequence="10"/>
+</odoo>

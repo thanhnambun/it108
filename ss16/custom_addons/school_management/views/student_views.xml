@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Tree View -->
+    <record id="view_school_student_tree" model="ir.ui.view">
+        <field name="name">school.student.tree</field>
+        <field name="model">school.student</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="age"/>
+                <field name="school_id"/>
+                <field name="score"/>
+                <field name="exam_count"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_school_student_form" model="ir.ui.view">
+        <field name="name">school.student.form</field>
+        <field name="model">school.student</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Tên học viên..."/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="age"/>
+                            <field name="school_id"/>
+                            <field name="school_location" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="score"/>
+                            <field name="exam_count" readonly="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Kỳ thi tham gia">
+                            <field name="exam_ids">
+                                <tree>
+                                    <field name="exam_date"/>
+                                    <field name="subject"/>
+                                    <field name="school_name"/>
+                                    <field name="student_count"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_school_student_search" model="ir.ui.view">
+        <field name="name">school.student.search</field>
+        <field name="model">school.student</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="school_id"/>
+                <separator/>
+                <filter string="Có điểm" name="has_score" domain="[('score', '>', 0)]"/>
+                <filter string="Chưa có điểm" name="no_score" domain="[('score', '=', 0)]"/>
+                <group expand="0" string="Nhóm theo">
+                    <filter string="Trường học" name="group_school" context="{'group_by': 'school_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_school_student" model="ir.actions.act_window">
+        <field name="name">Học viên</field>
+        <field name="res_model">school.student</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Tạo học viên đầu tiên!
+            </p>
+        </field>
+    </record>
+
+    <!-- Menu -->
+    <menuitem id="menu_school_student"
+              name="Học viên"
+              parent="menu_school_root"
+              action="action_school_student"
+              sequence="20"/>
+</odoo>

@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Tree View -->
+    <record id="view_school_exam_tree" model="ir.ui.view">
+        <field name="name">school.exam.tree</field>
+        <field name="model">school.exam</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="exam_date"/>
+                <field name="subject"/>
+                <field name="school_id"/>
+                <field name="student_count"/>
+                <field name="average_score"/>
+                <field name="max_score"/>
+                <field name="min_score"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_school_exam_form" model="ir.ui.view">
+        <field name="name">school.exam.form</field>
+        <field name="model">school.exam</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="subject" placeholder="Tên môn học..."/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="exam_date"/>
+                            <field name="school_id"/>
+                        </group>
+                        <group>
+                            <field name="student_count" readonly="1"/>
+                            <field name="average_score" readonly="1"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group>
+                            <field name="max_score" readonly="1"/>
+                            <field name="min_score" readonly="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Học viên tham gia">
+                            <field name="student_ids" widget="many2many" domain="[('school_id', '=', school_id)]">
+                                <tree>
+                                    <field name="name"/>
+                                    <field name="age"/>
+                                    <field name="score"/>
+                                    <field name="school_name"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_school_exam_search" model="ir.ui.view">
+        <field name="name">school.exam.search</field>
+        <field name="model">school.exam</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="subject"/>
+                <field name="school_id"/>
+                <field name="exam_date"/>
+                <separator/>
+                <filter string="Tháng này" name="this_month" 
+                        domain="[('exam_date', '&gt;=', context_today().strftime('%Y-%m-01'))]"/>
+                <group expand="0" string="Nhóm theo">
+                    <filter string="Trường học" name="group_school" context="{'group_by': 'school_id'}"/>
+                    <filter string="Môn học" name="group_subject" context="{'group_by': 'subject'}"/>
+                    <filter string="Ngày thi" name="group_date" context="{'group_by': 'exam_date'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_school_exam" model="ir.actions.act_window">
+        <field name="name">Kỳ thi</field>
+        <field name="res_model">school.exam</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Tạo kỳ thi đầu tiên!
+            </p>
+        </field>
+    </record>
+
+    <!-- Menu -->
+    <menuitem id="menu_school_exam"
+              name="Kỳ thi"
+              parent="menu_school_root"
+              action="action_school_exam"
+              sequence="30"/>
+</odoo>

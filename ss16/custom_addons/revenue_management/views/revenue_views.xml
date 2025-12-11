@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Tree View -->
+    <record id="view_revenue_management_tree" model="ir.ui.view">
+        <field name="name">revenue.management.tree</field>
+        <field name="model">revenue.management</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="date"/>
+                <field name="category"/>
+                <field name="amount" widget="monetary" sum="Tổng"/>
+                <field name="reference"/>
+                <field name="description"/>
+                <field name="active" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_revenue_management_form" model="ir.ui.view">
+        <field name="name">revenue.management.form</field>
+        <field name="model">revenue.management</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive">
+                            <field name="active" widget="boolean_button" options="{'terminology': 'archive'}"/>
+                        </button>
+                    </div>
+                    <group>
+                        <group string="Thông tin doanh thu">
+                            <field name="date"/>
+                            <field name="amount"/>
+                            <field name="category"/>
+                        </group>
+                        <group string="Tham chiếu">
+                            <field name="reference"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="description" placeholder="Nhập mô tả chi tiết..."/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_revenue_management_search" model="ir.ui.view">
+        <field name="name">revenue.management.search</field>
+        <field name="model">revenue.management</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="date"/>
+                <field name="reference"/>
+                <field name="description"/>
+                <separator/>
+                <filter string="Hôm nay" name="today" 
+                        domain="[('date', '=', context_today().strftime('%Y-%m-%d'))]"/>
+                <filter string="Tuần này" name="this_week" 
+                        domain="[('date', '&gt;=', (context_today() - datetime.timedelta(days=context_today().weekday())).strftime('%Y-%m-%d')),
+                                ('date', '&lt;=', (context_today() + datetime.timedelta(days=6-context_today().weekday())).strftime('%Y-%m-%d'))]"/>
+                <filter string="Tháng này" name="this_month" 
+                        domain="[('date', '&gt;=', context_today().strftime('%Y-%m-01'))]"/>
+                <separator/>
+                <filter string="Bán hàng" name="product" domain="[('category', '=', 'product')]"/>
+                <filter string="Dịch vụ" name="service" domain="[('category', '=', 'service')]"/>
+                <filter string="Cho thuê" name="rental" domain="[('category', '=', 'rental')]"/>
+                <separator/>
+                <filter string="Hoạt động" name="active" domain="[('active', '=', True)]"/>
+                <filter string="Đã ẩn" name="inactive" domain="[('active', '=', False)]"/>
+                <group expand="0" string="Nhóm theo">
+                    <filter string="Ngày" name="group_date" context="{'group_by': 'date'}"/>
+                    <filter string="Danh mục" name="group_category" context="{'group_by': 'category'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Pivot View (Báo cáo) -->
+    <record id="view_revenue_management_pivot" model="ir.ui.view">
+        <field name="name">revenue.management.pivot</field>
+        <field name="model">revenue.management</field>
+        <field name="arch" type="xml">
+            <pivot string="Phân tích doanh thu">
+                <field name="date" type="row" interval="month"/>
+                <field name="category" type="col"/>
+                <field name="amount" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <!-- Graph View (Biểu đồ) -->
+    <record id="view_revenue_management_graph" model="ir.ui.view">
+        <field name="name">revenue.management.graph</field>
+        <field name="model">revenue.management</field>
+        <field name="arch" type="xml">
+            <graph string="Biểu đồ doanh thu" type="line">
+                <field name="date" interval="day"/>
+                <field name="amount" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_revenue_management" model="ir.actions.act_window">
+        <field name="name">Doanh thu</field>
+        <field name="res_model">revenue.management</field>
+        <field name="view_mode">tree,form,pivot,graph</field>
+        <field name="context">{'search_default_this_month': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Tạo bản ghi doanh thu đầu tiên!
+            </p>
+            <p>
+                Quản lý doanh thu với các tính năng:<br/>
+                - Thêm mới doanh thu (date, amount, description)<br/>
+                - Cập nhật thông tin<br/>
+                - Tính tổng doanh thu theo ngày/tháng<br/>
+                - Báo cáo và biểu đồ
+            </p>
+        </field>
+    </record>
+
+    <!-- Menu -->
+    <menuitem id="menu_revenue_root"
+              name="Doanh thu"
+              sequence="50"/>
+
+    <menuitem id="menu_revenue_management"
+              name="Quản lý doanh thu"
+              parent="menu_revenue_root"
+              action="action_revenue_management"
+              sequence="10"/>
+</odoo>

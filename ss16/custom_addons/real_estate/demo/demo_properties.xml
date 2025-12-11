@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Demo Properties -->
+        
+        <record id="demo_property_1" model="real.estate.property">
+            <field name="name">Căn hộ cao cấp Vinhomes Central Park</field>
+            <field name="description">Căn hộ 3 phòng ngủ, view sông Sài Gòn tuyệt đẹp, nội thất cao cấp đầy đủ, an ninh 24/7</field>
+            <field name="postcode">700000</field>
+            <field name="date_availability" eval="(DateTime.today() + timedelta(days=30)).strftime('%Y-%m-%d')"/>
+            <field name="expected_price">5000000000</field>
+            <field name="selling_price">0</field>
+            <field name="bedrooms">3</field>
+            <field name="living_area">120</field>
+            <field name="facades">2</field>
+            <field name="garage">True</field>
+            <field name="garden">False</field>
+            <field name="garden_area">0</field>
+        </record>
+
+        <record id="demo_property_2" model="real.estate.property">
+            <field name="name">Biệt thự Thảo Điền</field>
+            <field name="description">Biệt thự sang trọng khu Thảo Điền, có hồ bơi riêng, khu vườn rộng rãi, thiết kế hiện đại</field>
+            <field name="postcode">700001</field>
+            <field name="date_availability" eval="(DateTime.today() + timedelta(days=60)).strftime('%Y-%m-%d')"/>
+            <field name="expected_price">15000000000</field>
+            <field name="selling_price">0</field>
+            <field name="bedrooms">5</field>
+            <field name="living_area">300</field>
+            <field name="facades">4</field>
+            <field name="garage">True</field>
+            <field name="garden">True</field>
+            <field name="garden_area">500</field>
+            <field name="garden_orientation">south</field>
+        </record>
+
+        <record id="demo_property_3" model="real.estate.property">
+            <field name="name">Nhà phố mặt tiền Quận 1</field>
+            <field name="description">Nhà phố 4 tầng, mặt tiền đường lớn, vị trí kinh doanh đắc địa, gần trung tâm</field>
+            <field name="postcode">700002</field>
+            <field name="date_availability" eval="DateTime.today().strftime('%Y-%m-%d')"/>
+            <field name="expected_price">12000000000</field>
+            <field name="selling_price">11500000000</field>
+            <field name="bedrooms">4</field>
+            <field name="living_area">200</field>
+            <field name="facades">1</field>
+            <field name="garage">True</field>
+            <field name="garden">True</field>
+            <field name="garden_area">50</field>
+            <field name="garden_orientation">east</field>
+        </record>
+
+        <record id="demo_property_4" model="real.estate.property">
+            <field name="name">Studio Quận 2 - The Sun Avenue</field>
+            <field name="description">Studio hiện đại 45m², full nội thất, gần trung tâm thương mại, tiện nghi đầy đủ</field>
+            <field name="postcode">700003</field>
+            <field name="date_availability" eval="(DateTime.today() + timedelta(days=15)).strftime('%Y-%m-%d')"/>
+            <field name="expected_price">2000000000</field>
+            <field name="selling_price">0</field>
+            <field name="bedrooms">1</field>
+            <field name="living_area">45</field>
+            <field name="facades">1</field>
+            <field name="garage">False</field>
+            <field name="garden">False</field>
+            <field name="garden_area">0</field>
+        </record>
+
+        <record id="demo_property_5" model="real.estate.property">
+            <field name="name">Penthouse Landmark 81</field>
+            <field name="description">Penthouse tầng cao nhất, view toàn cảnh thành phố 360 độ, thiết kế sang trọng bậc nhất</field>
+            <field name="postcode">700004</field>
+            <field name="date_availability" eval="(DateTime.today() + timedelta(days=90)).strftime('%Y-%m-%d')"/>
+            <field name="expected_price">25000000000</field>
+            <field name="selling_price">0</field>
+            <field name="bedrooms">4</field>
+            <field name="living_area">250</field>
+            <field name="facades">3</field>
+            <field name="garage">True</field>
+            <field name="garden">True</field>
+            <field name="garden_area">100</field>
+            <field name="garden_orientation">west</field>
+        </record>
+
+        <record id="demo_property_6" model="real.estate.property">
+            <field name="name">Nhà vườn Bình Thạnh</field>
+            <field name="description">Nhà vườn yên tĩnh, không gian xanh mát, phù hợp gia đình có trẻ nhỏ</field>
+            <field name="postcode">700005</field>
+            <field name="date_availability" eval="DateTime.today().strftime('%Y-%m-%d')"/>
+            <field name="expected_price">8000000000</field>
+            <field name="selling_price">7500000000</field>
+            <field name="bedrooms">3</field>
+            <field name="living_area">150</field>
+            <field name="facades">2</field>
+            <field name="garage">True</field>
+            <field name="garden">True</field>
+            <field name="garden_area">300</field>
+            <field name="garden_orientation">south</field>
+        </record>
+
+        <record id="demo_property_7" model="real.estate.property">
+            <field name="name">Căn hộ Masteri Thảo Điền</field>
+            <field name="description">Căn hộ 2 phòng ngủ, view hồ bơi, tiện ích đầy đủ, gần trường quốc tế</field>
+            <field name="postcode">700006</field>
+            <field name="date_availability" eval="(DateTime.today() + timedelta(days=45)).strftime('%Y-%m-%d')"/>
+            <field name="expected_price">4500000000</field>
+            <field name="selling_price">0</field>
+            <field name="bedrooms">2</field>
+            <field name="living_area">85</field>
+            <field name="facades">1</field>
+            <field name="garage">True</field>
+            <field name="garden">False</field>
+            <field name="garden_area">0</field>
+        </record>
+
+        <record id="demo_property_8" model="real.estate.property">
+            <field name="name">Shophouse Phú Mỹ Hưng</field>
+            <field name="description">Shophouse 1 trệt 3 lầu, mặt tiền đường lớn, kinh doanh sầm uất</field>
+            <field name="postcode">700007</field>
+            <field name="date_availability" eval="DateTime.today().strftime('%Y-%m-%d')"/>
+            <field name="expected_price">18000000000</field>
+            <field name="selling_price">17000000000</field>
+            <field name="bedrooms">3</field>
+            <field name="living_area">180</field>
+            <field name="facades">2</field>
+            <field name="garage">True</field>
+            <field name="garden">True</field>
+            <field name="garden_area">80</field>
+            <field name="garden_orientation">north</field>
+        </record>
+
+    </data>
+</odoo>

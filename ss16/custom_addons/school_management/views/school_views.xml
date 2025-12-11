@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Tree View -->
+    <record id="view_school_school_tree" model="ir.ui.view">
+        <field name="name">school.school.tree</field>
+        <field name="model">school.school</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="location"/>
+                <field name="start_date"/>
+                <field name="student_count"/>
+                <field name="exam_count"/>
+                <field name="average_score"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_school_school_form" model="ir.ui.view">
+        <field name="name">school.school.form</field>
+        <field name="model">school.school</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="%(action_school_student)d" 
+                                type="action" 
+                                class="oe_stat_button" 
+                                icon="fa-users"
+                                context="{'default_school_id': active_id, 'search_default_school_id': active_id}">
+                            <field name="student_count" widget="statinfo" string="Học viên"/>
+                        </button>
+                        <button name="%(action_school_exam)d" 
+                                type="action" 
+                                class="oe_stat_button" 
+                                icon="fa-file-text"
+                                context="{'default_school_id': active_id, 'search_default_school_id': active_id}">
+                            <field name="exam_count" widget="statinfo" string="Kỳ thi"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Tên trường học..."/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="location"/>
+                            <field name="start_date"/>
+                        </group>
+                        <group>
+                            <field name="average_score" readonly="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Học viên">
+                            <field name="student_ids">
+                                <tree>
+                                    <field name="name"/>
+                                    <field name="age"/>
+                                    <field name="score"/>
+                                    <field name="exam_count"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Kỳ thi">
+                            <field name="exam_ids">
+                                <tree>
+                                    <field name="exam_date"/>
+                                    <field name="subject"/>
+                                    <field name="student_count"/>
+                                    <field name="average_score"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_school_school" model="ir.actions.act_window">
+        <field name="name">Trường học</field>
+        <field name="res_model">school.school</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Tạo trường học đầu tiên!
+            </p>
+        </field>
+    </record>
+
+    <!-- Menu -->
+    <menuitem id="menu_school_root"
+              name="Quản lý trường học"
+              sequence="60"/>
+
+    <menuitem id="menu_school_school"
+              name="Trường học"
+              parent="menu_school_root"
+              action="action_school_school"
+              sequence="10"/>
+</odoo>

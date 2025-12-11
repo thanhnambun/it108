@@ -1,0 +1,2 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_ss15_16_ss15_16,ss15_16.ss15_16,model_ss15_16_ss15_16,base.group_user,1,1,1,1
